@@ -32,7 +32,7 @@ def weights_init(m):
         m.weight.data.normal__(1.0, 0.02)
         m.bias.data.fill__(0)
     
-# Defining the generator
+# Defining the Generator
 class G(nn.Module):
     
     def __init__(self):
@@ -58,4 +58,29 @@ class G(nn.Module):
         output = self.main(input)
         return output
     
+# Creating the generator
+netG = G()
+netG.apply(weights_init)
+
+# Defining the Discriminator
+class D(nn.Module):
     
+    def __init__(self):
+        super(D, self).__init()
+        self.main = nn.Sequential(
+            nn.Conv2d(3, 64, 4, 2, 1, bias = False),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(64, 128, 4, 2, 1, bias = False)
+            nn.BatchNorm2d(128),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(128, 256, 4, 2, 1, bias = False),
+            nn.BatchNorm2d(256),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(256, 512, 4, 2, 1, bias = False), 
+            nn.BatchNorm2d(512),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(512, 1, 4, 1, 0, bias = False),
+            nn.Sigmoid()
+            )
+        
+        
