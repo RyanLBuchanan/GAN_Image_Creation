@@ -53,3 +53,9 @@ class G(nn.Module):
             nn.ConvTranspose2d(64, 3, 4, 2, 1, bias = False),
             nn.Tanh()
             )
+        
+    def forward(self, input):
+        output = self.main(input)
+        return output
+    
+    
