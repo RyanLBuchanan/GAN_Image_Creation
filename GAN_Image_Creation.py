@@ -68,11 +68,11 @@ netG.apply(weights_init)
 class D(nn.Module):
     
     def __init__(self):
-        super(D, self).__init()
+        super(D, self).__init__()
         self.main = nn.Sequential(
             nn.Conv2d(3, 64, 4, 2, 1, bias = False),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, 128, 4, 2, 1, bias = False)
+            nn.Conv2d(64, 128, 4, 2, 1, bias = False),
             nn.BatchNorm2d(128),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(128, 256, 4, 2, 1, bias = False),
@@ -122,7 +122,26 @@ for epoch in range(25):
         errD_fake = criterion(output, target)
         
         # Backpropagating the total error
-         
+        errD = errD_real + errD_fake
+        errD.backward()
+        optimizerD.step()
+        
+        # 2nd Step: Updating the weights of the neural network of the generator
+        
+        netD.zero_grad()
+        target = Variable(torch.ones(input.size()[0]))
+        output = netD(fake)
+        errG = criterion(output, target)
+        errG.backward()
+        optimizer.step()
+        
+        # 3rd Step: Printing the losses and saving the real images and generated images
+        
+        print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f' % (epoch, 25, i, len(dataloader), errD.data[0], errG.data[0]))
+        if i % 100 == 0:
+            vutils.save_image(real, '%s/real_samples.png' % "./results", normalize = True)
+            fake = netG(noise)
+            vutils.save_image(fake.data '%s/fake_samples_epoch%03d.png' % "./results", epoch, normalize = True)
 
 
 
